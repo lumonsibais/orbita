@@ -1,0 +1,35 @@
+name: Bug
+description: Algo que no funciona como debería
+labels: [bug]
+body:
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente donde ocurre
+      options: [local, dev, qa, producción]
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Qué esperabas que pasara
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Qué pasó en realidad
+      description: Pega el error completo o el traceback si lo hay.
+      render: text
+    validations:
+      required: true

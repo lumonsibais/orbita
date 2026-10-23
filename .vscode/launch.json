@@ -1,0 +1,25 @@
+{
+  // Depurador: pon un punto rojo (breakpoint) a la izquierda de una línea y presiona F5.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: API",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["orbita.main:app", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "justMyCode": true
+    },
+    {
+      "name": "Backend: pruebas del archivo abierto",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-v"],
+      "cwd": "${workspaceFolder}/backend",
+      "justMyCode": false
+    }
+  ]
+}

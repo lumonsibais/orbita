@@ -1,0 +1,19 @@
+# Dueños de cada parte del código: GitHub les pide la revisión automáticamente.
+# Reemplaza USUARIO_JL y USUARIO_ELLA por sus usuarios de GitHub y quita el "#" inicial de cada regla.
+
+# *                                      @USUARIO_JL @USUARIO_ELLA
+# /backend/src/orbita/shared_kernel/     @USUARIO_JL
+# /backend/src/orbita/modules/identity/  @USUARIO_JL @USUARIO_ELLA
+# /backend/src/orbita/modules/neo/       @USUARIO_ELLA
+# /backend/src/orbita/modules/impact/    @USUARIO_ELLA
+# /backend/src/orbita/modules/media/     @USUARIO_ELLA
+# /backend/src/orbita/modules/watchlist/ @USUARIO_ELLA
+# /frontend/src/app/                     @USUARIO_JL
+# /frontend/src/shared/                  @USUARIO_JL
+# /frontend/src/features/auth/           @USUARIO_JL @USUARIO_ELLA
+# /frontend/src/features/neo/            @USUARIO_ELLA
+# /frontend/src/features/impact/         @USUARIO_ELLA
+# /frontend/src/features/media/          @USUARIO_ELLA
+# /frontend/src/features/watchlist/      @USUARIO_ELLA
+# /infra/                                @USUARIO_JL
+# /.github/                              @USUARIO_JL

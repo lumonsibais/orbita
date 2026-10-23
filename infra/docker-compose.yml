@@ -1,0 +1,30 @@
+# Servicios para desarrollo local. Desde la raíz del repo:
+#   docker compose -f infra/docker-compose.yml up -d
+# Las variables salen de infra/.env (copia de infra/.env.example).
+name: orbita
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: orbita-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD en infra/.env}
+      IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:?Falta IDENTITY_DB_PASSWORD en infra/.env}
+      NEO_DB_PASSWORD: ${NEO_DB_PASSWORD:?Falta NEO_DB_PASSWORD en infra/.env}
+      WATCHLIST_DB_PASSWORD: ${WATCHLIST_DB_PASSWORD:?Falta WATCHLIST_DB_PASSWORD en infra/.env}
+      MEDIA_DB_PASSWORD: ${MEDIA_DB_PASSWORD:?Falta MEDIA_DB_PASSWORD en infra/.env}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Scripts que MySQL corre solo la primera vez, con el volumen vacío
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:

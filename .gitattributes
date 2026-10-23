@@ -1,0 +1,10 @@
+# Todos los archivos de texto se guardan con saltos de línea LF, aunque alguien trabaje en Windows.
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.mwb binary

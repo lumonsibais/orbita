@@ -1,0 +1,34 @@
+name: Historia de usuario
+description: Una funcionalidad nueva, contada desde quien la usa
+labels: []
+body:
+  - type: textarea
+    id: historia
+    attributes:
+      label: Historia
+      description: "Como <tipo de usuario>, quiero <acción> para <beneficio>."
+      placeholder: Como usuaria registrada, quiero guardar un asteroide en mi lista para seguir sus acercamientos.
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Condiciones concretas y comprobables. Cuando todas se cumplen, la historia está terminada.
+      value: |
+        - [ ] Dado ..., cuando ..., entonces ...
+        - [ ]
+    validations:
+      required: true
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options: [identity, neo, watchlist, impact, media, shared_kernel, frontend, infra, docs]
+    validations:
+      required: true
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas técnicas
+      description: Pistas, enlaces a documentación, dudas abiertas.

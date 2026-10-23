@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "orbita"
+version = "0.1.0"
+description = "API de Órbita: seguimiento de asteroides cercanos a la Tierra"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.161",
+  "uvicorn[standard]>=0.54",
+  "pydantic-settings>=2.16",
+  "sqlalchemy>=2.1",
+  "pymysql>=1.2",
+  "cryptography>=50", # PyMySQL la necesita para autenticarse con MySQL 8
+  "alembic>=1.20",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=9.1",
+  "httpx>=0.28", # lo usa el TestClient de FastAPI
+  "ruff>=0.17",
+  "mypy>=2.4",
+  "pre-commit>=4.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/orbita"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
