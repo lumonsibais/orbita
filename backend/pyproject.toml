@@ -13,7 +13,7 @@ dependencies = [
   "pydantic-settings>=2.16",
   "sqlalchemy>=2.1",
   "pymysql>=1.2",
-  "cryptography>=50", # PyMySQL la necesita para autenticarse con MySQL 8
+  "cryptography>=50.0.2", # PyMySQL la necesita para autenticarse con MySQL 8
   "alembic>=1.20",
 ]
 
