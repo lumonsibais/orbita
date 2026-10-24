@@ -6,6 +6,9 @@ updates:
     target-branch: dev
     schedule:
       interval: weekly
+    # Solo cuando la versión nueva queda fuera del rango de pyproject.toml. Sin lockfile, pip ya
+    # instala la última dentro del rango: subir el mínimo en cada parche no cambia nada.
+    versioning-strategy: increase-if-necessary
     labels: [backend, dependencias]
     commit-message:
       prefix: chore(deps)
@@ -22,6 +25,14 @@ updates:
       # Un solo PR para todo lo de ESLint, TypeScript y pruebas, en lugar de diez
       herramientas:
         dependency-type: development
+    ignore:
+      # typescript-eslint aún no soporta TypeScript 6.1 ni 7 (su peer pide <6.1.0).
+      # Quitar cuando lo soporte.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
+      # Los tipos de Node siguen a la versión de .nvmrc (24); el salto se hace junto con Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /

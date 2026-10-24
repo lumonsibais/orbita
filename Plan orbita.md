@@ -456,7 +456,7 @@ El CI existe desde el sprint 1, antes del primer PR de ella: en un equipo real n
 | `release.yml` | Tag `v*` sobre `main` | Construir imagen Docker del backend → publicarla en GitHub Container Registry → crear el GitHub Release con notas generadas |
 | `deploy-prod.yml` (fase AWS) | Release publicado, con aprobación manual | Autenticarse en AWS con OIDC (sin llaves guardadas) → subir imagen a ECR → actualizar el servicio → migraciones → prueba de humo |
 
-Cosas para enseñarle aquí: por qué existe `ci-ok` (si un check obligatorio se salta porque no hubo cambios en su carpeta, GitHub deja el PR esperando para siempre; un job final que siempre corre lo evita); leer el log de un job que falló y reproducir el error en local con el mismo comando; `pre-commit` para que Ruff y Prettier corran antes del push y el CI rara vez falle por estilo; y Dependabot apuntando a `dev`, que genera PR reales para revisar.
+Cosas para enseñarle aquí: por qué existe `ci-ok` (si un check obligatorio se salta porque no hubo cambios en su carpeta, GitHub deja el PR esperando para siempre; un job final que siempre corre lo evita); leer el log de un job que falló y reproducir el error en local con el mismo comando; `pre-commit` para que Ruff y Prettier corran antes del push y el CI rara vez falle por estilo; y Dependabot apuntando a `dev`, que genera PR reales para revisar. Está configurado para no hacer ruido: en el backend solo propone versiones fuera del rango de `pyproject.toml`, y en el front ignora TypeScript ≥ 6.1 (hasta que `typescript-eslint` lo soporte) y los saltos mayores de `@types/node`, que siguen a Node 24.
 
 ## Despliegue en AWS
 
