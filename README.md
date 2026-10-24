@@ -67,11 +67,13 @@ Pégala en GitHub › Settings › SSH and GPG keys › New SSH key. Comprueba c
 ## 2. Clonar el repo
 
 ```bash
-cd ~                       # o la carpeta donde guardes tus proyectos
+mkdir -p ~/Developer && cd ~/Developer   # la carpeta para tus proyectos
 git clone git@github.com:USUARIO/orbita.git
 cd orbita
-git switch dev             # se trabaja siempre a partir de dev
+git switch dev                           # se trabaja siempre a partir de dev
 ```
+
+No clones el repo dentro de Documentos ni del Escritorio. Si iCloud sincroniza esas carpetas (pasa a menudo en Mac), daña el ambiente virtual y llena `.git` de archivos duplicados como `index 2`.
 
 ## 3. Levantar MySQL
 
@@ -99,6 +101,10 @@ pip install -e ".[dev]"           # instala la app y las herramientas de desarro
 pre-commit install                # revisiones automáticas antes de cada commit
 ```
 
+`.venv/` está en `.gitignore`: no se sube a GitHub, y cada quien lo crea en su máquina con estos comandos.
+
+Las librerías están en `pyproject.toml`, que es lo que lee `pip install -e ".[dev]"`. La misma lista está en `requirements.txt` (lo que la API necesita para correr) y en `requirements-dev.txt` (eso más las herramientas de desarrollo), para quien instale con `pip install -r` y, desde el sprint 3, para la imagen de Docker. Si agregas una librería, ponla en `pyproject.toml` y en el `requirements` que corresponda, en el mismo PR. Si los archivos no coinciden, `pytest` falla.
+
 Ahora el **archivo `.env`**, con la configuración de tu máquina. Se copia de la plantilla y nunca se sube a git:
 
 ```bash
@@ -113,8 +119,10 @@ Abre `backend/.env` y pega el resultado del segundo comando en `JWT_SECRET`, en 
 Con el ambiente activado y dentro de `backend/`:
 
 ```bash
-uvicorn orbita.main:app --reload    # la API queda en http://localhost:8000
+python run.py    # la API queda en http://localhost:8000
 ```
+
+`run.py` arranca uvicorn con recarga automática: cada vez que guardas un archivo, la API se reinicia. Es lo mismo que `uvicorn orbita.main:app --reload`, que también funciona.
 
 - [http://localhost:8000/health](http://localhost:8000/health) debe responder `{"status":"ok","env":"local"}`.
 - [http://localhost:8000/docs](http://localhost:8000/docs) muestra la documentación interactiva (Swagger).
@@ -156,16 +164,49 @@ npm run format         # formatea con Prettier
 npm run build          # compila la versión de producción en dist/
 ```
 
-## El día a día
+## 7. Levantar back y front juntos
 
-Cada vez que vayas a trabajar:
+El front, en el puerto 5173, le pide datos al back, en el 8000. Cada uno corre en su propia terminal, y las dos se quedan abiertas mientras trabajas.
+
+**Terminal 1, el backend:**
 
 ```bash
-cd ~/orbita
+cd ~/Developer/orbita/backend
+source .venv/bin/activate          # el prompt muestra (.venv)
+python run.py                      # se queda corriendo; no cierres esta terminal
+```
+
+Está listo cuando aparece `Application startup complete`.
+
+**Terminal 2, el frontend.** Abre otra terminal (en VS Code, el botón `+` del panel de terminal; en la app Terminal, `Cmd+T`):
+
+```bash
+cd ~/Developer/orbita/frontend
+nvm use
+npm run dev                        # se queda corriendo; no cierres esta terminal
+```
+
+Está listo cuando muestra `Local: http://localhost:5173/`.
+
+**Comprueba que se hablan:**
+
+1. Abre [http://localhost:5173](http://localhost:5173). Debe decir **API en línea · ambiente local**.
+2. Detén el backend con `Ctrl+C` en la terminal 1. En menos de 30 segundos la página cambia a **API fuera de línea**.
+3. Arráncalo otra vez (flecha arriba y Enter) y la página vuelve a "en línea".
+
+El front sabe dónde está el back por `VITE_API_URL` en `frontend/.env.local` (`http://localhost:8000`). El back acepta las llamadas del front porque `CORS_ORIGINS` en `backend/.env` incluye `http://localhost:5173`. Si cambias un puerto, cambia los dos archivos.
+
+Por ahora la API no usa MySQL, así que esto funciona aunque Docker esté apagado.
+
+Para terminar, `Ctrl+C` en cada terminal.
+
+## El día a día
+
+Cada vez que vayas a trabajar, levanta MySQL y luego el back y el front como en la sección 7:
+
+```bash
+cd ~/Developer/orbita
 docker compose -f infra/docker-compose.yml up -d
-cd backend && source .venv/bin/activate && uvicorn orbita.main:app --reload
-# en otra terminal:
-cd ~/orbita/frontend && nvm use && npm run dev
 ```
 
 Para empezar un issue (por ejemplo, el #12):
@@ -199,6 +240,7 @@ Luego abre el Pull Request hacia `dev` en GitHub y llena la plantilla. El CI rev
 | "API fuera de línea" con el backend corriendo | El backend no está en el puerto 8000, o `CORS_ORIGINS` no incluye `http://localhost:5173` | Revisa `VITE_API_URL` en el front y `CORS_ORIGINS` en `backend/.env` |
 | `nvm: command not found` | Faltan las líneas de nvm en `~/.zshrc` | Repite el paso 4 de las herramientas |
 | `pyenv install` falla con `No module named '_ssl'` o `Missing the OpenSSL lib?` | Python 3.11 no compila con OpenSSL 4 | `brew install openssl@3`, borra el intento fallido con la versión que mostró el error (por ejemplo `pyenv uninstall -f 3.11.17`) y repite la instalación con la variable del paso 3 de las herramientas |
+| `No module named 'orbita'` al arrancar la API o al correr `pytest`, aunque ya hiciste `pip install -e`; o aparecen archivos como `index 2` dentro de `.git` | El repo está en Documentos o en el Escritorio, y iCloud los sincroniza: oculta archivos del ambiente virtual y Python deja de verlos | Clona el repo otra vez en `~/Developer` (sección 2), copia tus `backend/.env` y `frontend/.env.local` y vuelve a crear el ambiente (sección 4) |
 | La terminal muestra `(base)` y `python --version` no dice 3.11 | Conda (Anaconda o Miniconda) activa su propio Python en cada terminal | `conda deactivate`; para que no vuelva a pasar, `conda config --set auto_activate_base false` |
 
 **Empezar la base desde cero** (borra todos los datos locales):
