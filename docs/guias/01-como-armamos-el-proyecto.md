@@ -397,7 +397,7 @@ Aprender a depurar te ahorra horas: en lugar de adivinar qué valor tiene una va
 | --- | --- |
 | `pull_request_template.md` | El texto que aparece al abrir un PR, con el checklist de Definition of Done |
 | `ISSUE_TEMPLATE/historia.yml` y `bug.yml` | Formularios para crear issues ordenados |
-| `CODEOWNERS` | Quién es dueño de cada carpeta; GitHub le pide la revisión automáticamente |
+| `CODEOWNERS` | Quién tiene que aprobar los PR. Solo está JL: GitHub le pide la revisión automáticamente y sin su aprobación no se puede fusionar |
 | `dependabot.yml` | Abre PRs solos cuando sale una versión nueva de una dependencia |
 | `workflows/ci.yml` | El CI: revisa automáticamente cada PR (ver abajo) |
 
@@ -438,12 +438,12 @@ El script:
 
 1. Sube `main`, crea `qa` a partir de `main` y `dev` a partir de `qa`: cada rama nace de la que tiene encima en la cadena de promociones.
 2. Pone `dev` como rama por defecto.
-3. Protege `dev`, `qa` y `main`: nadie hace push directo, todo entra por PR con una aprobación y con `ci-ok` en verde. En `dev`, además, tu rama tiene que estar al día con `dev` antes de fusionar.
+3. Protege `dev`, `qa` y `main`: nadie hace push directo, todo entra por PR con la aprobación de JL y con `ci-ok` en verde. En `dev`, además, tu rama tiene que estar al día con `dev` antes de fusionar. GitHub no deja aprobar el PR propio, así que JL, como administrador del repo, puede fusionar los suyos sin esperar una aprobación.
 4. Crea las etiquetas (`backend`, `bug`, `qa`…) y un milestone por sprint.
 
 Abre el script y léelo: cada bloque tiene un `echo` que dice qué hace.
 
-A mano quedan tres cosas: el tablero en GitHub Projects, las fechas de los milestones y los usuarios en `CODEOWNERS`.
+A mano quedan dos cosas: el tablero en GitHub Projects y las fechas de los milestones.
 
 ### 8.4 Los issues del sprint
 
@@ -481,7 +481,7 @@ gh pr create --base dev --fill
 Después, en GitHub:
 
 1. El CI corre solo. Si `ci-ok` sale en rojo, arréglalo antes de pedir revisión.
-2. La otra persona revisa. Responde cada comentario, con un cambio o con una explicación. Cuando aprueba, se fusiona con **Squash and merge** y el issue se cierra si el PR dice `Cierra #N`.
+2. JL revisa. Responde cada comentario, con un cambio o con una explicación. Cuando JL aprueba, se fusiona con **Squash and merge** y el issue se cierra si el PR dice `Cierra #N`. En los PR de JL es al revés: tú revisas y comentas, y JL los fusiona.
 3. Al cierre del sprint: PR de `dev` hacia `qa`, fusionado con **Create a merge commit**. Se prueba con `docs/qa/checklist.md`.
 4. PR de `qa` hacia `main`, también con **merge commit**.
 5. Tag y release:

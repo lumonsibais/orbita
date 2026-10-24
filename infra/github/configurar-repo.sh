@@ -43,15 +43,18 @@ gh repo edit "$REPO" \
 echo "→ Protección de dev, qa y main"
 # El check obligatorio es `ci-ok` (.github/workflows/ci.yml). En dev, además, la rama del PR
 # tiene que estar al día con dev antes de fusionar: eso obliga a hacer rebase.
+# Solo cuenta la aprobación del code owner (JL, en .github/CODEOWNERS). Como GitHub no deja
+# aprobar el PR propio, enforce_admins va en false para que JL, admin, pueda fusionar los suyos.
 for rama in dev qa main; do
   if [ "$rama" = "dev" ]; then al_dia=true; else al_dia=false; fi
   gh api --method PUT "repos/$REPO/branches/$rama/protection" --input - >/dev/null <<JSON
 {
   "required_status_checks": { "strict": $al_dia, "contexts": ["ci-ok"] },
-  "enforce_admins": true,
+  "enforce_admins": false,
   "required_pull_request_reviews": {
     "required_approving_review_count": 1,
-    "dismiss_stale_reviews": true
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": true
   },
   "required_conversation_resolution": true,
   "restrictions": null,
