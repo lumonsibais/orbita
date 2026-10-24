@@ -21,7 +21,7 @@ dependencies = [
 dev = [
   "pytest>=9.1",
   "httpx>=0.28", # lo usa el TestClient de FastAPI
-  "ruff>=0.17",
+  "ruff>=0.17.1",
   "mypy>=2.4",
   "pre-commit>=4.7",
 ]
