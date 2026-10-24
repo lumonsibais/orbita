@@ -12,7 +12,7 @@ Como equipo, queremos cerrar el sprint 1 con un release etiquetado, recorriendo 
 
 - [ ] Code freeze: PR `dev → qa` fusionado con merge commit
 - [ ] QA hecho por ella con `docs/qa/checklist.md`, copiado como comentario en el PR de promoción
-- [ ] PR `qa → main` con merge commit, aprobado por ella
+- [ ] PR `qa → main` con merge commit, revisado por ella y fusionado por JL
 - [ ] Tag `v0.1.0` en `main` y GitHub Release con notas generadas
 - [ ] Demo y retro del sprint
 

@@ -255,7 +255,7 @@ Reglas:
 
 ## Organización en GitHub
 
-Un solo repositorio (`orbita`) con tres ramas largas, `dev`, `qa` y `main`, una por ambiente. Todo cambio entra por Pull Request revisado por la otra persona.
+Un solo repositorio (`orbita`) con tres ramas largas, `dev`, `qa` y `main`, una por ambiente. Todo cambio entra por Pull Request, y solo se fusiona con la aprobación de JL, el dueño del repo ([ADR 0002](docs/adr/0002-solo-jl-aprueba.md)).
 
 **Estructura del monorepo.**
 
@@ -300,7 +300,7 @@ orbita/
 │   └── github/                   # scripts de configuración y backlog de issues por sprint
 ├── docs/                         # ADRs, diagramas EER por esquema, checklist de QA
 ├── .vscode/                      # launch.json para depurar backend y front, extensiones recomendadas
-├── .github/                      # workflows/ci.yml, plantillas, CODEOWNERS por módulo, Dependabot
+├── .github/                      # workflows/ci.yml, plantillas, CODEOWNERS (JL), Dependabot
 ├── .pre-commit-config.yaml
 ├── .editorconfig
 └── .gitattributes                # saltos de línea LF para todos, aunque alguien use Windows
@@ -311,9 +311,9 @@ orbita/
 | Rama | Ambiente | Se despliega | Entra por | Tipo de merge | Protección |
 | --- | --- | --- | --- | --- | --- |
 | `feat/*`, `fix/*`, `chore/*` | Tu máquina | — | Se crea desde `dev` | — | Ninguna: es tuya, puedes rebasear y hacer `push --force-with-lease` |
-| `dev` (rama por defecto) | dev | Automático en cada merge (desde el sprint 3) | PR de una rama de trabajo | Squash | 1 aprobación, `ci-ok` en verde, rama actualizada con `dev` |
-| `qa` | qa | Automático en cada merge (desde el sprint 3) | PR de promoción `dev → qa` | Merge commit | 1 aprobación y `ci-ok` en verde |
-| `main` | Producción (local hasta el sprint 9) | Al publicar un release | PR de promoción `qa → main` | Merge commit + tag | 1 aprobación, `ci-ok` en verde y checklist de QA firmado |
+| `dev` (rama por defecto) | dev | Automático en cada merge (desde el sprint 3) | PR de una rama de trabajo | Squash | Aprobación de JL, `ci-ok` en verde, rama actualizada con `dev` |
+| `qa` | qa | Automático en cada merge (desde el sprint 3) | PR de promoción `dev → qa` | Merge commit | Aprobación de JL y `ci-ok` en verde |
+| `main` | Producción (local hasta el sprint 9) | Al publicar un release | PR de promoción `qa → main` | Merge commit + tag | Aprobación de JL, `ci-ok` en verde y checklist de QA firmado |
 | `hotfix/*` | — | — | Se crea desde `main`; PR a `main` | Squash | Después, back-merge `main → qa → dev` |
 
 ```mermaid
@@ -378,21 +378,21 @@ Squash solo de una rama de trabajo hacia `dev`. Entre ramas largas (`dev → qa 
 
 ## Roles y reparto de trabajo
 
-JL hace de tech lead y dueño de la plataforma (CI/CD, Docker, AWS); ella es desarrolladora full stack y es dueña de una funcionalidad completa por sprint, de la tabla en MySQL hasta la pantalla. Los dos revisan los PR del otro.
+JL hace de tech lead y dueño de la plataforma (CI/CD, Docker, AWS); ella es desarrolladora full stack y es dueña de una funcionalidad completa por sprint, de la tabla en MySQL hasta la pantalla. JL es el único que aprueba PR. Ella revisa los de JL y los comenta, pero su aprobación no habilita el merge.
 
 | Responsabilidad | JL | Ella |
 | --- | --- | --- |
-| Arquitectura y ADRs | Propone y documenta | Cuestiona y aprueba |
+| Arquitectura y ADRs | Propone y documenta | Cuestiona y propone cambios |
 | Infraestructura, CI/CD, AWS | Construye el primer ciclo | Lo replica en el siguiente (por ejemplo, ella agrega el job del front al CI copiando el del back) |
 | Funcionalidades | Una pieza de soporte por sprint | La pieza principal del sprint, de punta a punta |
-| Revisión de código | Revisa todos sus PR con comentarios explicativos | Revisa todos los de JL; al menos un comentario por PR, aunque sea una pregunta |
+| Revisión de código | Revisa y aprueba todos los PR; en los de ella, con comentarios explicativos | Revisa todos los de JL y deja al menos un comentario por PR, aunque sea una pregunta; no aprueba |
 | Tablero y planeación | Facilita los primeros sprints | Facilita desde el sprint 4 |
 | Promociones y releases | Hace las de los sprints 1 a 4 explicando cada paso | Hace las promociones `dev → qa → main` y las notas de release desde el sprint 5 |
-| QA manual | Escribe el primer checklist | Prueba en qa los cambios de JL, y JL los de ella: nadie aprueba su propio trabajo |
+| QA manual | Escribe el primer checklist | Prueba en qa los cambios de JL, y JL los de ella: nadie prueba su propio trabajo |
 
 La idea es que el andamiaje difícil lo ponga JL una vez, y que ella lo repita después con menos ayuda. Hacia el sprint 6 los papeles se invierten en algunas tareas: ella hace la pieza de seguridad o infraestructura y JL la revisa como lo haría un senior exigente.
 
-Los módulos se reparten como si fueran equipos distintos, y `CODEOWNERS` lo refleja para que GitHub pida la revisión del dueño:
+Los módulos se reparten como si fueran equipos distintos:
 
 | Módulo | Dueño | Por qué |
 | --- | --- | --- |
@@ -402,7 +402,7 @@ Los módulos se reparten como si fueran equipos distintos, y `CODEOWNERS` lo ref
 | `watchlist` | Ella | Su primer módulo que consume a otro por fachada y eventos |
 | `alerts` (fase 2) | Ella | Candidato a extraerse como microservicio en AWS |
 
-Cuando un módulo necesita algo de otro, se abre un issue al dueño pidiendo el cambio en su fachada, igual que entre equipos reales.
+Cuando un módulo necesita algo de otro, se abre un issue al dueño pidiendo el cambio en su fachada, igual que entre equipos reales. El dueño revisa el PR de ese cambio, pero la aprobación siempre es de JL; por eso `CODEOWNERS` no sigue esta tabla y solo lista a JL.
 
 Una regla útil para aprender: cuando ella se atore más de 45 minutos, abre un comentario en el PR o issue explicando qué intentó. Así practica pedir ayuda por escrito, que es como se trabaja en equipos remotos.
 
@@ -413,7 +413,7 @@ Un sprint 0 de fundamentos y ocho sprints de dos semanas llevan a la v1.0, con l
 | Sprint | Objetivo | JL | Ella | Entregable |
 | --- | --- | --- | --- | --- |
 | 0 · Fundamentos (3 semanas) | Que pueda leer y escribir código sencillo | Prepara ejercicios cortos y los revisa con ella | Terminal (carpetas, rutas, variables de entorno); Git local (`init`, `add`, `commit`, `log`, `branch`, `merge`) con Learn Git Branching; Python básico (tipos, funciones, listas, diccionarios, clases, excepciones); qué son HTTP y JSON, probando la API de la NASA con el navegador y con `curl`; SQL básico (`SELECT`, `WHERE`, `JOIN`) en un MySQL de prueba | Repo personal `orbita-katas` con sus ejercicios y su primer conflicto de merge resuelto sola |
-| 1 · Arranque | Entorno y forma de trabajo | Crea el repo con `dev`, `qa` y `main` y sus protecciones, tablero y plantillas; `docker-compose` con MySQL 8 y un esquema por módulo; `.env.example`, `.editorconfig`, `.gitattributes`, pre-commit y `launch.json`; esqueleto del front (Vite + React + TS, ESLint con reglas de capas, Prettier, Vitest) con la feature de ejemplo `system`; carpetas de los módulos del backend (`identity`, `neo`, `watchlist`, `media`, `impact`) con sus capas y su `public.py`, todavía vacías; CI del backend (`ci.yml`) con el check `ci-ok` obligatorio en las tres ramas; issues del sprint en el tablero | Sus tres issues: preparar su entorno (Git, llave SSH, Python, Node, Docker, Workbench); levantar Órbita siguiendo solo el README y corregir lo que falle en su primer PR, con el CI en verde; kata de POO (`Vector3`, `Orbit`) con pytest y depurador en `orbita-katas`. Además, revisa su primer PR: el de CODEOWNERS de JL | README probado por ella desde cero · primera promoción `dev → qa → main` · v0.1.0 |
+| 1 · Arranque | Entorno y forma de trabajo | Crea el repo con `dev`, `qa` y `main` y sus protecciones, tablero y plantillas; `docker-compose` con MySQL 8 y un esquema por módulo; `.env.example`, `.editorconfig`, `.gitattributes`, pre-commit y `launch.json`; esqueleto del front (Vite + React + TS, ESLint con reglas de capas, Prettier, Vitest) con la feature de ejemplo `system`; carpetas de los módulos del backend (`identity`, `neo`, `watchlist`, `media`, `impact`) con sus capas y su `public.py`, todavía vacías; CI del backend (`ci.yml`) con el check `ci-ok` obligatorio en las tres ramas; issues del sprint en el tablero | Sus tres issues: preparar su entorno (Git, llave SSH, Python, Node, Docker, Workbench); levantar Órbita siguiendo solo el README y corregir lo que falle en su primer PR, con el CI en verde; kata de POO (`Vector3`, `Orbit`) con pytest y depurador en `orbita-katas`. Además, su primera revisión de código: comentar un PR abierto de JL o de Dependabot | README probado por ella desde cero · primera promoción `dev → qa → main` · v0.1.0 |
 | 2 · Esqueleto modular y dominio | Fronteras y lógica de negocio | Base del monolito modular sobre las carpetas del sprint 1: `shared_kernel`, bus de eventos en memoria, registro de los routers de cada módulo en `main.py`, contratos de import-linter (y su paso en el CI), Alembic por módulo | Job del frontend en `ci.yml` (ESLint, tipos, Vitest y build), copiando la forma del job del backend; EER de los esquemas `neo` y `media`; models y services de `neo` (`Asteroid`, `CloseApproach`) y módulo `impact` (`ImpactCalculator`) con pruebas | ADR de los módulos · services con 90%+ de cobertura · v0.2.0 |
 | 3 · Integración NASA y ambientes | Traer y guardar datos reales; dev y qa en línea | MySQL como servicio en el CI, ahora que las pruebas usan la base; servidor de dev y qa (una EC2 pequeña con dos stacks de Docker Compose, cada uno con su base y sus secretos) y `deploy.yml` hacia cada uno | Módulo `neo`: cliente NeoWs, repositorios, sincronización diaria, `GET /asteroids`, `scripts/seed.py`; módulo `media`: APOD y `GET /apod`; `GET /health` que también verifica la conexión a MySQL | Datos reales en MySQL · Swagger navegable en dev y qa · v0.3.0 |
 | 4 · Módulo identity | Usuarios y JWT | Emisión y validación de JWT; fachada `identity.public` con `get_current_user` para los demás módulos; primer hotfix simulado | Casos de uso de registro, login, refresh con rotación, logout, `GET /me`; pruebas de cada caso de error; primer QA manual en qa | Flujo completo de auth probado con pytest · v0.4.0 y v0.4.1 |
@@ -482,9 +482,9 @@ Un issue solo pasa a Hecho cuando cumple esta lista; vale la pena copiarla en la
 - Si agrega una dependencia, está en `pyproject.toml` o `package.json`, no solo instalada en una máquina.
 - Sin errores de Ruff, mypy, ESLint ni `tsc`.
 - Respeta las fronteras: no importa el interior de otro módulo ni lee tablas de otro esquema; si necesita algo, usa la fachada pública o un evento.
-- Si cambia la fachada pública o un evento de un módulo, lo aprueba el dueño de ese módulo.
+- Si cambia la fachada pública o un evento de un módulo, también lo revisa el dueño de ese módulo.
 - El PR describe qué cambia, por qué y cómo probarlo, con captura si toca la interfaz.
-- Revisado y aprobado por la otra persona; todos los comentarios respondidos.
+- Aprobado por JL; todos los comentarios respondidos.
 - Si cambia el esquema, incluye migración de Alembic del módulo, probada hacia arriba y hacia abajo.
 - Sin secretos, credenciales ni datos personales en el código o los logs.
 - Documentación actualizada si cambia la API o el arranque del proyecto.
