@@ -174,7 +174,7 @@ Lo primero que hace cualquier persona al entrar a un equipo es levantar el proye
 | --- | --- | --- |
 | Git | Control de versiones | En macOS viene con `xcode-select --install`. En Windows, todo el proyecto vive dentro de WSL2 con Ubuntu |
 | VS Code | Editor | Extensiones: Python, Pylance, Ruff, ESLint, Prettier, Docker, GitLens |
-| Python 3.11 | Backend | Con `pyenv`; la versión queda fijada en `backend/.python-version` |
+| Python 3.11 | Backend | Con `pyenv`, compilado con `openssl@3` y `xz` de Homebrew (detalle en el README); la versión queda fijada en `backend/.python-version` |
 | Node LTS | Frontend | Con `nvm`; la versión queda fijada en `frontend/.nvmrc` |
 | Docker Desktop | MySQL y la app en contenedores | Hay que abrirlo antes de `docker compose up` |
 | MySQL Workbench | Ver y consultar la base | Se conecta al MySQL del contenedor en `localhost:3306` |
@@ -210,6 +210,7 @@ deactivate                        # salir del ambiente
 - Si el prompt no muestra `(.venv)`, el ambiente no está activo y `pip` instala en el lugar equivocado. Nunca `sudo pip install`.
 - En VS Code: `Python: Select Interpreter` → `backend/.venv`, para que el editor y el depurador usen el mismo Python.
 - El equivalente en el front es `node_modules/`: se instala con `nvm use` y `npm ci` (que respeta el `package-lock.json` exacto), no con `npm install`, salvo cuando se agrega una dependencia.
+- npm 11 no corre los scripts de instalación de las dependencias hasta que alguien los aprueba. La decisión queda en `allowScripts` de `frontend/package.json` y entra por PR como cualquier cambio. Hoy solo está `fsevents`, denegado porque ya trae su binario compilado.
 - Ejercicio: borrar `.venv/` y `node_modules/` y recrearlos solo con el README. Si no se puede, el README está incompleto.
 
 **Variables de entorno y archivos `.env`.** Todo lo que cambia entre ambientes (direcciones de la base, contraseñas, llaves de API) vive fuera del código, en variables de entorno ([factor III de las doce](https://12factor.net/es/config)). El código es el mismo en local, dev, qa y prod; solo cambian las variables.

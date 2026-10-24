@@ -25,12 +25,12 @@ Estas instrucciones son para macOS. En Windows, instala primero [WSL2 con Ubuntu
 2. **[Homebrew](https://brew.sh/es/)**, el instalador de paquetes de macOS. Sigue las instrucciones de su página.
 3. **Python 3.11 con pyenv**, que permite tener varias versiones de Python sin pelearse entre ellas:
    ```bash
-   brew install pyenv openssl@3
+   brew install pyenv openssl@3 xz
    echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc   # para que la terminal encuentre pyenv
    exec zsh                                        # recarga la terminal
    PYTHON_BUILD_HOMEBREW_OPENSSL_FORMULA=openssl@3 pyenv install 3.11
    ```
-   La variable del último comando le dice a pyenv que compile Python con OpenSSL 3. Sin ella, pyenv usa OpenSSL 4 (el que trae Homebrew por defecto), con el que Python 3.11 no compila, y la instalación falla con `ModuleNotFoundError: No module named '_ssl'`. Tarda unos minutos y es normal que no muestre nada mientras compila.
+   La variable del último comando le dice a pyenv que compile Python con OpenSSL 3. Sin ella, pyenv usa OpenSSL 4 (el que trae Homebrew por defecto), con el que Python 3.11 no compila, y la instalación falla con `ModuleNotFoundError: No module named '_ssl'`. `xz` es la librería de compresión que Python necesita para su módulo `lzma`; si falta, la instalación termina igual pero avisa `Missing the lzma lib?` y después fallan las librerías que lo usan. Tarda unos minutos y es normal que no muestre nada mientras compila.
 4. **Node 24 con nvm**, lo mismo que pyenv pero para Node (lo que corre el frontend):
    ```bash
    brew install nvm
@@ -240,6 +240,7 @@ Luego abre el Pull Request hacia `dev` en GitHub y llena la plantilla. El CI rev
 | "API fuera de línea" con el backend corriendo | El backend no está en el puerto 8000, o `CORS_ORIGINS` no incluye `http://localhost:5173` | Revisa `VITE_API_URL` en el front y `CORS_ORIGINS` en `backend/.env` |
 | `nvm: command not found` | Faltan las líneas de nvm en `~/.zshrc` | Repite el paso 4 de las herramientas |
 | `pyenv install` falla con `No module named '_ssl'` o `Missing the OpenSSL lib?` | Python 3.11 no compila con OpenSSL 4 | `brew install openssl@3`, borra el intento fallido con la versión que mostró el error (por ejemplo `pyenv uninstall -f 3.11.17`) y repite la instalación con la variable del paso 3 de las herramientas |
+| `pyenv install` avisa `Missing the lzma lib?`, o luego `No module named '_lzma'` | Falta `xz` en Homebrew | `brew install xz`, `pyenv uninstall -f 3.11.17` (la versión que instalaste) y repite la instalación del paso 3 de las herramientas |
 | `No module named 'orbita'` al arrancar la API o al correr `pytest`, aunque ya hiciste `pip install -e`; o aparecen archivos como `index 2` dentro de `.git` | El repo está en Documentos o en el Escritorio, y iCloud los sincroniza: oculta archivos del ambiente virtual y Python deja de verlos | Clona el repo otra vez en `~/Developer` (sección 2), copia tus `backend/.env` y `frontend/.env.local` y vuelve a crear el ambiente (sección 4) |
 | La terminal muestra `(base)` y `python --version` no dice 3.11 | Conda (Anaconda o Miniconda) activa su propio Python en cada terminal | `conda deactivate`; para que no vuelva a pasar, `conda config --set auto_activate_base false` |
 
