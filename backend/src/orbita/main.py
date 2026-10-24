@@ -1,4 +1,4 @@
-"""Punto de entrada de la API. Se levanta con: uvicorn orbita.main:app --reload"""
+"""Punto de entrada de la API. Se levanta con: python run.py (o uvicorn orbita.main:app --reload)"""
 
 import logging
 

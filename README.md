@@ -119,8 +119,10 @@ Abre `backend/.env` y pega el resultado del segundo comando en `JWT_SECRET`, en 
 Con el ambiente activado y dentro de `backend/`:
 
 ```bash
-uvicorn orbita.main:app --reload    # la API queda en http://localhost:8000
+python run.py    # la API queda en http://localhost:8000
 ```
+
+`run.py` arranca uvicorn con recarga automática: cada vez que guardas un archivo, la API se reinicia. Es lo mismo que `uvicorn orbita.main:app --reload`, que también funciona.
 
 - [http://localhost:8000/health](http://localhost:8000/health) debe responder `{"status":"ok","env":"local"}`.
 - [http://localhost:8000/docs](http://localhost:8000/docs) muestra la documentación interactiva (Swagger).
@@ -171,7 +173,7 @@ El front, en el puerto 5173, le pide datos al back, en el 8000. Cada uno corre e
 ```bash
 cd ~/Developer/orbita/backend
 source .venv/bin/activate          # el prompt muestra (.venv)
-uvicorn orbita.main:app --reload   # se queda corriendo; no cierres esta terminal
+python run.py                      # se queda corriendo; no cierres esta terminal
 ```
 
 Está listo cuando aparece `Application startup complete`.
