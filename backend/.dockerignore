@@ -1,0 +1,25 @@
+# Lo que NO se copia a la imagen al hacer `docker build` desde backend/.
+# Los Dockerfile llegan en el sprint 3; este archivo ya queda listo para entonces.
+
+# Secretos: se pasan como variables de entorno, nunca dentro de la imagen
+.env
+.env.*
+!.env.example
+
+# Ambiente virtual y cachés: la imagen instala sus propias dependencias
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Sistema y editores
+.DS_Store
+.vscode/
+.idea/

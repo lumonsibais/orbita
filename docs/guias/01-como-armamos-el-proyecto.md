@@ -145,6 +145,8 @@ Es el archivo que describe el proyecto de Python. Tiene tres partes:
 
 Regla: si agregas una librería, la agregas aquí. Si no, funciona en tu máquina y falla en la de los demás.
 
+En muchos proyectos de Python vas a ver un `requirements.txt`: una lista de librerías, una por línea, que se instala con `pip install -r requirements.txt`. Es el formato más antiguo y el más común. Aquí tenemos los dos: `pyproject.toml` manda, y `requirements.txt` y `requirements-dev.txt` repiten su lista para quien instale con `pip install -r` y para la imagen de Docker. Como tener la misma lista en dos lugares invita a que se desfasen, `tests/test_requirements.py` compara los archivos y falla si no coinciden.
+
 ### 4.3 La estructura `src/`
 
 ```
@@ -192,9 +194,9 @@ cp .env.example .env
 
 ```python
 class Settings(BaseSettings):
-    app_env: Literal["local", "dev", "qa", "prod"] = "local"   # solo esos valores
-    database_url_neo: str                                      # obligatoria: no tiene valor por defecto
-    jwt_secret: SecretStr                                      # SecretStr no se imprime en los logs
+    app_env: Literal["local", "dev", "qa", "prod"] = "local"  # solo esos valores
+    database_url_neo: str  # obligatoria: no tiene valor por defecto
+    jwt_secret: SecretStr  # SecretStr no se imprime en los logs
 ```
 
 Si falta una variable obligatoria o no es válida, la app **no arranca** y dice cuál es el problema. Es mejor fallar en el primer segundo que a media petición de un usuario.
@@ -218,9 +220,9 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 
 ```python
 def test_health_responde_ok() -> None:
-    client = TestClient(app)                 # preparar
-    response = client.get("/health")         # actuar
-    assert response.status_code == 200       # comprobar
+    client = TestClient(app)  # preparar
+    response = client.get("/health")  # actuar
+    assert response.status_code == 200  # comprobar
 ```
 
 ```bash

@@ -1,0 +1,7 @@
+# Lo de requirements.txt más las herramientas de desarrollo: las mismas de `dev` en pyproject.toml.
+-r requirements.txt
+pytest>=9.1
+httpx>=0.28  # lo usa el TestClient de FastAPI
+ruff>=0.17
+mypy>=2.4
+pre-commit>=4.7

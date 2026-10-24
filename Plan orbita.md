@@ -46,7 +46,7 @@ Backend en Python con FastAPI, organizado como monolito modular, y frontend en R
 | Estado y datos en el front | TanStack Query + Zod | Caché de peticiones y validación de respuestas |
 | Pruebas | pytest, Vitest, Playwright | Unitarias, de integración y end to end |
 | Calidad | Ruff, mypy, ESLint, Prettier, pre-commit | Estilo y tipos revisados antes de cada commit |
-| Entorno de Python | `venv` + `pip`, dependencias en `pyproject.toml` | Lo estándar; enseña qué es un ambiente virtual antes de usar atajos |
+| Entorno de Python | `venv` + `pip`, dependencias en `pyproject.toml` y la misma lista en `requirements.txt` y `requirements-dev.txt` | Lo estándar; enseña qué es un ambiente virtual antes de usar atajos |
 | Configuración | `pydantic-settings` + archivos `.env` | Variables por ambiente, validadas al arrancar |
 | Infraestructura local | Docker + Docker Compose | Mismo entorno para los dos |
 | Móvil (fase 2) | React Native con Expo | Reutiliza las capas de dominio y casos de uso del front |
@@ -205,7 +205,8 @@ deactivate                        # salir del ambiente
 ```
 
 - `.venv/` está en `.gitignore`: el ambiente no se sube; se sube `pyproject.toml`, que dice cómo recrearlo.
-- Toda librería nueva se agrega a `pyproject.toml` en el mismo PR. Un `pip install algo` sin anotarlo funciona en tu máquina y rompe en la de la otra persona y en el CI.
+- `requirements.txt` (lo que la API necesita para correr) y `requirements-dev.txt` (eso más las herramientas) repiten la lista de `pyproject.toml` para `pip install -r` y para la imagen de Docker del sprint 3. `tests/test_requirements.py` falla si se desfasan.
+- Toda librería nueva se agrega a `pyproject.toml` y al `requirements` que corresponda, en el mismo PR. Un `pip install algo` sin anotarlo funciona en tu máquina y rompe en la de la otra persona y en el CI.
 - Si el prompt no muestra `(.venv)`, el ambiente no está activo y `pip` instala en el lugar equivocado. Nunca `sudo pip install`.
 - En VS Code: `Python: Select Interpreter` → `backend/.venv`, para que el editor y el depurador usen el mismo Python.
 - El equivalente en el front es `node_modules/`: se instala con `nvm use` y `npm ci` (que respeta el `package-lock.json` exacto), no con `npm install`, salvo cuando se agrega una dependencia.
@@ -280,6 +281,9 @@ orbita/
 │   ├── tests/<módulo>/           # pruebas por módulo
 │   ├── scripts/seed.py           # carga asteroides de ejemplo sin llamar a la NASA
 │   ├── pyproject.toml            # dependencias y configuración de Ruff, mypy y pytest
+│   ├── requirements.txt          # las mismas dependencias, para pip install -r y Docker
+│   ├── requirements-dev.txt      # requirements.txt más las herramientas de desarrollo
+│   ├── .dockerignore             # lo que no entra a la imagen (.venv, .env, cachés)
 │   ├── .python-version
 │   ├── .env.example              # plantilla de variables (el .env real no se sube)
 │   └── .importlinter             # contratos de módulos y de capas
@@ -289,7 +293,7 @@ orbita/
 │   ├── src/shared/               # config (variables validadas), http (cliente), ui
 │   ├── eslint.config.js          # incluye las reglas de capas de Clean Architecture
 │   ├── .nvmrc
-│   ├── .env.example
+│   ├── .dockerignore             # lo que no entra a la imagen (node_modules, dist, .env)
 │   └── .env.example
 ├── mobile/                       # Expo, fase 2
 ├── infra/                        # docker-compose.yml y .env.example; luego Terraform
