@@ -8,6 +8,7 @@ export function App() {
         <p>Seguimiento de asteroides cercanos a la Tierra</p>
       </header>
       <ApiStatusBadge />
+      <footer className="footer">Órbita v0.1.0 · Datos de la NASA y del JPL</footer>
     </main>
   );
 }
